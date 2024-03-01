@@ -50,7 +50,7 @@ resource "aws_lambda_permission" "error_notificator" {
 # ================================================================
 
 module "lambda_feed_trailer" {
-  source = "../lambda_function_basic"
+  source = "../lambda_function"
 
   handler_dir_name = "feed_trailer"
   handler          = "feed_trailer.handler"
@@ -64,8 +64,9 @@ module "lambda_feed_trailer" {
     data.aws_ssm_parameter.base_layer_arn.value,
     aws_lambda_layer_version.common.arn
   ]
-  system_name = var.system_name
-  region      = var.region
+  system_name                         = var.system_name
+  region                              = var.region
+  subscription_destination_lambda_arn = module.error_notificator.function_arn
 }
 
 resource "aws_lambda_permission" "lambda_feed_trailer" {
