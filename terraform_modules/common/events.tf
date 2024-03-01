@@ -56,7 +56,7 @@ resource "aws_cloudwatch_event_target" "error_notificator" {
 resource "aws_cloudwatch_event_rule" "lambda_feed_trailer" {
   name_prefix         = "lambda_feed_trailer_"
   state               = true ? "ENABLED" : "DISABLED"
-  schedule_expression = "rate(15minutes)"
+  schedule_expression = "rate(15 minutes)"
 }
 
 resource "aws_cloudwatch_event_target" "lambda_feed_trailer" {
