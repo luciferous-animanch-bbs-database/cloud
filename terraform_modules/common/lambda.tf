@@ -67,3 +67,11 @@ module "lambda_feed_trailer" {
   system_name = var.system_name
   region      = var.region
 }
+
+resource "aws_lambda_permission" "lambda_feed_trailer" {
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_feed_trailer.function_name
+  qualifier     = module.lambda_feed_trailer.function_alias_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.lambda_feed_trailer.arn
+}

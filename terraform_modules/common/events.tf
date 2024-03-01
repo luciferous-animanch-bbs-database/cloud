@@ -48,3 +48,18 @@ resource "aws_cloudwatch_event_target" "error_notificator" {
     }
   }
 }
+
+# ================================================================
+# Slack Error Notificator
+# ================================================================
+
+resource "aws_cloudwatch_event_rule" "lambda_feed_trailer" {
+  name_prefix         = "lambda-feed-trailer-"
+  state               = true ? "ENABLED" : "DISABLED"
+  schedule_expression = "rate(15minutes)"
+}
+
+resource "aws_cloudwatch_event_target" "lambda_feed_trailer" {
+  rule = aws_cloudwatch_event_rule.lambda_feed_trailer.name
+  arn  = module.lambda_feed_trailer.function_alias_arn
+}
