@@ -44,3 +44,26 @@ resource "aws_lambda_permission" "error_notificator" {
   function_name = module.error_notificator.function_arn
   principal     = "logs.amazonaws.com"
 }
+
+# ================================================================
+# Lambda Feed Trailer
+# ================================================================
+
+module "lambda_feed_trailer" {
+  source = "../lambda_function_basic"
+
+  handler_dir_name = "feed_trailer"
+  handler          = "feed_trailer.handler"
+  memory_size      = 128
+  role_arn         = aws_iam_role.lambda_feed_trailer.arn
+  environment_variables = {
+    DYNAMODB_TABLE_NAME = aws_dynamodb_table.database.name
+  }
+
+  layers = [
+    data.aws_ssm_parameter.base_layer_arn.value,
+    aws_lambda_layer_version.common.arn
+  ]
+  system_name = var.system_name
+  region      = var.region
+}
