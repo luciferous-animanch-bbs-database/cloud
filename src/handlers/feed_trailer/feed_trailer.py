@@ -75,7 +75,9 @@ def convert(*, entry: Entry) -> Item:
         category = entry["tags"][0]["term"]
     except Exception:
         pass
-    unixtime = int(datetime(*entry["published_parsed"][:6], tzinfo=timezone.utc))
+    unixtime = int(
+        datetime(*entry["published_parsed"][:6], tzinfo=timezone.utc).timestamp()
+    )
     url = entry["link"]
     return Item(
         title=entry["title"],
