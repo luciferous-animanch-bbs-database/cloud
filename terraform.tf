@@ -33,6 +33,8 @@ provider "aws" {
 module "common" {
   source = "./terraform_modules/common"
 
+  region      = local.region
+  system_name = local.system_name
   slack_incoming_webhooks = [
     var.SLACK_INCOMING_WEBHOOK_01,
     var.SLACK_INCOMING_WEBHOOK_02,
