@@ -39,14 +39,12 @@ def get_entries() -> list[Entry]:
 
 @logging_function(logger)
 def put_entries(*, all_entries: list[Entry], client: DynamoDBClient, table: Table):
-    errors: list[tuple[Exception, Entry]] = []
+    flag_error = False
     for entry in all_entries:
         try:
             RepositoryEntryArchives.put_entry(entry=entry, client=client, table=table)
-        except Exception as e:
-            errors.append((e, entry))
+        except Exception:
+            flag_error = True
 
-    if len(errors) > 0:
-        for e, entry in errors:
-            logger.warning("item of failed to put", data={"error": e, "entry": entry})
+    if flag_error:
         logger.error("failed to put items (詳細はログを見て)")

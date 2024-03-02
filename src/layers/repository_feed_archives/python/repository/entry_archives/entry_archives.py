@@ -29,19 +29,19 @@ class RepositoryEntryArchives:
     @logging_function(logger)
     def put_entry(*, entry: Entry, client: DynamoDBClient, table: Table):
         try:
+            text = json.dumps(entry, ensure_ascii=False)
+            binary = compress(text.encode(), 9)
             table.put_item(
                 Item=asdict(
-                    ModelItemEntryArchive(
-                        url=entry["link"],
-                        compressed_entry=compress(
-                            json.dumps(entry, ensure_ascii=False), 9
-                        ),
-                    )
+                    ModelItemEntryArchive(url=entry["link"], compressed_entry=binary)
                 ),
                 ConditionExpression=Attr("url").not_exists(),
             )
         except client.exceptions.ConditionalCheckFailedException:
             pass
+        except Exception:
+            logger.warning("failed to put item", data={"entry": entry}, exc_info=True)
+            raise
 
     @staticmethod
     @logging_function(logger)
