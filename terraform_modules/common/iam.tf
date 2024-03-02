@@ -160,3 +160,20 @@ resource "aws_iam_role_policy_attachment" "lambda_entry_archiver" {
   policy_arn = each.value
   role       = aws_iam_role.lambda_entry_archiver.name
 }
+
+# ================================================================
+# Role Lambda Entry Parser
+# ================================================================
+
+resource "aws_iam_role" "lambda_entry_parser" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_entry_parser" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+    b = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.lambda_entry_parser.name
+}
