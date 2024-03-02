@@ -1,6 +1,6 @@
 resource "aws_dynamodb_table" "entry_archives" {
   attribute {
-    name = "hash"
+    name = "url"
     type = "S"
   }
 
