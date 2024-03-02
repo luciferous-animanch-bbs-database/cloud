@@ -18,8 +18,6 @@ jst = timezone(offset=timedelta(hours=+9), name="JST")
 class ModelItemEntryArchive:
     url: str
     compressed_entry: bytes
-    disabled: bool = field(default=False)
-    created_at: str = field(default_factory=lambda: str(datetime.now(tz=jst)))
 
 
 logger = create_logger(__name__)

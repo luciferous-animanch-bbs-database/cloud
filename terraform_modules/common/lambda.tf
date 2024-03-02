@@ -80,38 +80,6 @@ resource "aws_lambda_permission" "error_notificator" {
 }
 
 # ================================================================
-# Lambda Feed Trailer
-# ================================================================
-
-module "lambda_feed_trailer" {
-  source = "../lambda_function"
-
-  handler_dir_name = "feed_trailer"
-  handler          = "feed_trailer.handler"
-  memory_size      = 128
-  role_arn         = aws_iam_role.lambda_feed_trailer.arn
-  environment_variables = {
-    DYNAMODB_TABLE_NAME = aws_dynamodb_table.database.name
-  }
-
-  layers = [
-    data.aws_ssm_parameter.base_layer_arn.value,
-    aws_lambda_layer_version.common.arn
-  ]
-  system_name                         = var.system_name
-  region                              = var.region
-  subscription_destination_lambda_arn = module.error_notificator.function_arn
-}
-
-resource "aws_lambda_permission" "lambda_feed_trailer" {
-  action        = "lambda:InvokeFunction"
-  function_name = module.lambda_feed_trailer.function_name
-  qualifier     = module.lambda_feed_trailer.function_alias_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.lambda_feed_trailer.arn
-}
-
-# ================================================================
 # Lambda Entry Archiver
 # ================================================================
 

@@ -50,21 +50,6 @@ resource "aws_cloudwatch_event_target" "error_notificator" {
 }
 
 # ================================================================
-# Lambda Feed Trailer
-# ================================================================
-
-resource "aws_cloudwatch_event_rule" "lambda_feed_trailer" {
-  name_prefix         = "lambda_feed_trailer_"
-  state               = false ? "ENABLED" : "DISABLED"
-  schedule_expression = "rate(15 minutes)"
-}
-
-resource "aws_cloudwatch_event_target" "lambda_feed_trailer" {
-  arn  = module.lambda_feed_trailer.function_alias_arn
-  rule = aws_cloudwatch_event_rule.lambda_feed_trailer.name
-}
-
-# ================================================================
 # Lambda Entry Archiver
 # ================================================================
 
