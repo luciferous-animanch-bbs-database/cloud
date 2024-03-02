@@ -1,7 +1,7 @@
 import json
 from base64 import b64encode
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import TypedDict
 from zlib import compress
 
@@ -31,6 +31,7 @@ class Item:
     url: str
     thumbnail: str
     unixtime: int
+    timestamp: str
     category: str
     sort_key: str
     encoded_compressed_raw: str
@@ -42,6 +43,16 @@ class EnvironmentVariables:
 
 
 logger = create_logger(__name__)
+jst = timezone(offset=timedelta(hours=+9), name="JST")
+mapping_week = {
+    "Sun": "日",
+    "Mon": "月",
+    "Tue": "火",
+    "Wed": "水",
+    "Thu": "木",
+    "Fri": "金",
+    "Sat": "土",
+}
 
 
 @logging_handler(logger)
@@ -79,11 +90,17 @@ def convert(*, entry: Entry) -> Item:
         datetime(*entry["published_parsed"][:6], tzinfo=timezone.utc).timestamp()
     )
     url = entry["link"]
+    dt_jst = datetime.fromtimestamp(unixtime, tz=jst)
+    timestamp = dt_jst.strftime("%y/%m/%d(%a) %H:%M:%S")
+    for k, v in mapping_week.items():
+        timestamp = timestamp.replace(k, v)
+
     return Item(
         title=entry["title"],
         url=entry["link"],
         thumbnail=entry["summary"],
         unixtime=unixtime,
+        timestamp=timestamp,
         category=category,
         sort_key=f"{unixtime}={url}",
         encoded_compressed_raw=b64encode(
