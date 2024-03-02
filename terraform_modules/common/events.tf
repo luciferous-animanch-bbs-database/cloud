@@ -50,7 +50,7 @@ resource "aws_cloudwatch_event_target" "error_notificator" {
 }
 
 # ================================================================
-# Slack Error Notificator
+# Lambda Feed Trailer
 # ================================================================
 
 resource "aws_cloudwatch_event_rule" "lambda_feed_trailer" {
@@ -60,6 +60,21 @@ resource "aws_cloudwatch_event_rule" "lambda_feed_trailer" {
 }
 
 resource "aws_cloudwatch_event_target" "lambda_feed_trailer" {
-  rule = aws_cloudwatch_event_rule.lambda_feed_trailer.name
   arn  = module.lambda_feed_trailer.function_alias_arn
+  rule = aws_cloudwatch_event_rule.lambda_feed_trailer.name
+}
+
+# ================================================================
+# Lambda Entry Archiver
+# ================================================================
+
+resource "aws_cloudwatch_event_rule" "lambda_entry_archiver" {
+  name_prefix         = "lambda_entry_archiver"
+  state               = true ? "ENABLED" : "DISABLED"
+  schedule_expression = "rate(15 minutes)"
+}
+
+resource "aws_cloudwatch_event_target" "lambda_entry_archiver" {
+  arn  = module.lambda_entry_archiver.function_alias_arn
+  rule = aws_cloudwatch_event_rule.lambda_entry_archiver.name
 }

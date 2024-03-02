@@ -16,6 +16,23 @@ resource "aws_lambda_layer_version" "common" {
 }
 
 # ================================================================
+# Layer Repository Feed Archives
+# ================================================================
+
+data "archive_file" "layer_repository_feed_archives" {
+  type        = "zip"
+  output_path = "layer_repository_feed_archives.zip"
+  source_dir  = "${path.root}/src/layers/repository_feed_archives"
+}
+
+resource "aws_lambda_layer_version" "repository_feed_archives" {
+  layer_name = "layer-repository-feed_archives"
+
+  filename         = data.archive_file.layer_repository_feed_archives.output_path
+  source_code_hash = data.archive_file.layer_repository_feed_archives.output_base64sha256
+}
+
+# ================================================================
 # Lambda Error Notificator
 # ================================================================
 
@@ -75,4 +92,39 @@ resource "aws_lambda_permission" "lambda_feed_trailer" {
   qualifier     = module.lambda_feed_trailer.function_alias_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.lambda_feed_trailer.arn
+}
+
+# ================================================================
+# Lambda Entry Archiver
+# ================================================================
+
+module "lambda_entry_archiver" {
+  source = "../lambda_function"
+
+  handler_dir_name = "entry_archiver"
+  handler          = "entry_archiver.handler"
+  memory_size      = 256
+  role_arn         = aws_iam_role.lambda_entry_archiver.arn
+
+  environment_variables = {
+    DYNAMODB_TABLE_NAME = aws_dynamodb_table.entry_archives.name
+  }
+
+  layers = [
+    data.aws_ssm_parameter.base_layer_arn.value,
+    aws_lambda_layer_version.common.arn,
+    aws_lambda_layer_version.repository_feed_archives.arn
+  ]
+
+  system_name                         = var.system_name
+  region                              = var.region
+  subscription_destination_lambda_arn = module.error_notificator.function_arn
+}
+
+resource "aws_lambda_permission" "lambda_entry_archiver" {
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_entry_archiver.function_name
+  qualifier     = module.lambda_entry_archiver.function_alias_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.lambda_entry_archiver.arn
 }

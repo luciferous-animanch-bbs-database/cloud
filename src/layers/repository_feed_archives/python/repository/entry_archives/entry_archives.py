@@ -1,5 +1,6 @@
 import json
 from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from boto3.dynamodb.conditions import Attr
@@ -9,12 +10,15 @@ from mypy_boto3_dynamodb import DynamoDBClient
 from mypy_boto3_dynamodb.service_resource import Table
 from zstd import compress
 
+jst = timezone(offset=timedelta(hours=+9), name="JST")
+
 
 @dataclass
 class ModelItemEntryArchive:
     url: str
     compressed_entry: bytes
     disabled: bool = field(default=False)
+    created_at: str = field(default_factory=lambda: str(datetime.now(tz=jst)))
 
 
 logger = create_logger(__name__)

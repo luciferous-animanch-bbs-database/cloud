@@ -28,6 +28,19 @@ data "aws_iam_policy_document" "assume_role_policy_lambda" {
   }
 }
 
+data "aws_iam_policy_document" "assume_role_policy_pipes" {
+  policy_id = "assume_role_policy_pipes"
+  statement {
+    sid     = "AssumeRolePolicyPipes"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = ["pipes.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
 # ================================================================
 # Policy EventBridge Invoke API Destination
 # ================================================================
@@ -81,6 +94,23 @@ resource "aws_iam_role_policy_attachment" "event_bridge_api_destination" {
 }
 
 # ================================================================
+# Role Pipe Insert Archived Entry
+# ================================================================
+
+resource "aws_iam_role" "pipes_insert_archived_entry" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_pipes.json
+}
+
+resource "aws_iam_role_policy_attachment" "pipes_insert_archived_entry" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
+    b = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.pipes_insert_archived_entry.name
+}
+
+# ================================================================
 # Role Lambda Error Notificator
 # ================================================================
 
@@ -112,4 +142,21 @@ resource "aws_iam_role_policy_attachment" "lambda_feed_trailer" {
   }
   policy_arn = each.value
   role       = aws_iam_role.lambda_feed_trailer.name
+}
+
+# ================================================================
+# Role Lambda Entry Archiver
+# ================================================================
+
+resource "aws_iam_role" "lambda_entry_archiver" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_entry_archiver" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    b = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.lambda_entry_archiver.name
 }
