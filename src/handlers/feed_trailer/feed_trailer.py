@@ -2,7 +2,6 @@ import json
 from base64 import b64encode
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TypedDict
 from zlib import compress
 
 import feedparser
@@ -10,19 +9,8 @@ from boto3.dynamodb.conditions import Attr
 from common.aws import create_client, create_resource
 from common.dataclasses import load_environment
 from common.logger import create_logger, logging_function, logging_handler
+from common.models.feed import Entry
 from mypy_boto3_dynamodb import DynamoDBClient, DynamoDBServiceResource
-
-
-class Tag(TypedDict):
-    term: str
-
-
-class Entry(TypedDict):
-    title: str
-    link: str
-    summary: str
-    published_parsed: list[int]
-    tags: list[Tag]
 
 
 @dataclass

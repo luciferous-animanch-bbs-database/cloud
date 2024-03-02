@@ -1,3 +1,4 @@
+from base64 import b64encode
 from dataclasses import asdict, is_dataclass
 from decimal import Decimal
 from logging import DEBUG
@@ -5,6 +6,7 @@ from typing import Type
 
 from aws_lambda_powertools import Logger
 from boto3.dynamodb.conditions import AttributeBase, ConditionBase
+from zstd import compress
 
 
 def custom_default(obj):
@@ -18,6 +20,12 @@ def custom_default(obj):
         return obj.name
     if isinstance(obj, ConditionBase):
         return obj.get_expression()
+    if isinstance(obj, bytes):
+        return {
+            "type": "byts",
+            "detail": "compress by zstd and base64 encode",
+            "value": b64encode(compress(obj, 9)),
+        }
     try:
         return {"type": str(type(obj)), "value": str(obj)}
     except Exception as e:
