@@ -17,7 +17,7 @@ terraform {
 
 locals {
   region      = "ap-northeast-1"
-  system_name = "cloud"
+  system_name = "luciferous-animanch-bbs-database-cloud"
 }
 
 provider "aws" {
