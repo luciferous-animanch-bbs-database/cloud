@@ -45,14 +45,14 @@ class RepositoryEntryArchives:
             raise
 
     @staticmethod
-    @logging_function(logger)
+    @logging_function(logger, write=True)
     def get_entry(*, url: str, table: Table) -> Optional[Entry]:
         resp = table.get_item(
             Key={"url": url},
             ProjectionExpression="#compressed_entry",
             ExpressionAttributeNames={"#compressed_entry": "compressed_entry"},
         )
-        if "Item" in resp:
+        if "Item" not in resp:
             return None
         binary: Binary = resp["Item"]["compressed_entry"]
         raw = decompress(binary.value)
