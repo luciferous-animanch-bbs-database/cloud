@@ -6,6 +6,7 @@ on:
 env:
   TF_VAR_SLACK_INCOMING_WEBHOOK_01: ${{ secrets.SLACK_INCOMING_WEBHOOK_01 }}
   TF_VAR_SLACK_INCOMING_WEBHOOK_02: ${{ secrets.SLACK_INCOMING_WEBHOOK_02 }}
+  TMP_AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 permissions:
   contents: read
