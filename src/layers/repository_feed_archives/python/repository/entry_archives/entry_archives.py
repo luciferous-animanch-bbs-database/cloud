@@ -45,7 +45,7 @@ class RepositoryEntryArchives:
             raise
 
     @staticmethod
-    @logging_function(logger, write=True)
+    @logging_function(logger)
     def get_entry(*, url: str, table: Table) -> Optional[Entry]:
         resp = table.get_item(
             Key={"url": url},
