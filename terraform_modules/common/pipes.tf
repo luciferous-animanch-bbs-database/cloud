@@ -11,7 +11,7 @@ resource "aws_pipes_pipe" "insert_archived_entry" {
     filter_criteria {
       filter {
         pattern = jsonencode({
-          eventName = ["INSERT", "MODIFY"]
+          eventName = ["INSERT"]
         })
       }
     }

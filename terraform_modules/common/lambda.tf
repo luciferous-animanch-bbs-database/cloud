@@ -156,6 +156,7 @@ module "lambda_entry_parser" {
   handler_dir_name = "entry_parser"
   handler          = "entry_parser.handler"
   memory_size      = 128
+  timeout          = aws_sqs_queue.inert_archived_entry.visibility_timeout_seconds
   role_arn         = aws_iam_role.lambda_entry_parser.arn
 
   environment_variables = {
@@ -174,4 +175,17 @@ module "lambda_entry_parser" {
   system_name                         = var.system_name
   region                              = var.region
   subscription_destination_lambda_arn = module.error_notificator.function_arn
+}
+
+resource "aws_lambda_event_source_mapping" "lambda_entry_parser" {
+  event_source_arn = aws_sqs_queue.inert_archived_entry.arn
+  function_name    = module.lambda_entry_parser.function_alias_arn
+  batch_size       = 1
+  enabled          = true
+
+  maximum_batching_window_in_seconds = aws_sqs_queue.inert_archived_entry.visibility_timeout_seconds
+
+  scaling_config {
+    maximum_concurrency = 100
+  }
 }
