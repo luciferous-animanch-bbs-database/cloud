@@ -4,7 +4,7 @@ resource "aws_dynamodb_table" "entry_archives" {
     type = "S"
   }
 
-  hash_key         = "hash"
+  hash_key         = "url"
   name             = "entry_archives"
   billing_mode     = "PAY_PER_REQUEST"
   stream_enabled   = true
