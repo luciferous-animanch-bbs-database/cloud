@@ -4,11 +4,12 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.types import Binary
 from common.logger import create_logger, logging_function
 from common.models.feed import Entry
 from mypy_boto3_dynamodb import DynamoDBClient
 from mypy_boto3_dynamodb.service_resource import Table
-from zstd import compress
+from zstd import compress, decompress
 
 jst = timezone(offset=timedelta(hours=+9), name="JST")
 
@@ -45,9 +46,14 @@ class RepositoryEntryArchives:
 
     @staticmethod
     @logging_function(logger)
-    def get_entry(*, url: str, table: Table) -> Optional[ModelItemEntryArchive]:
-        resp = table.get_item(Key={"url": url})
+    def get_entry(*, url: str, table: Table) -> Optional[Entry]:
+        resp = table.get_item(
+            Key={"url": url},
+            ProjectionExpression="#compressed_entry",
+            ExpressionAttributeNames={"#compressed_entry": "compressed_entry"},
+        )
         if "Item" in resp:
             return None
-        else:
-            return ModelItemEntryArchive(**resp["Item"])
+        binary: Binary = resp["Item"]["compressed_entry"]
+        raw = decompress(binary.value)
+        return json.loads(raw)

@@ -1,1 +1,1 @@
-from .entry_archives import RepositoryEntryArchives
+from .entry_archives import ModelItemEntryArchive, RepositoryEntryArchives
