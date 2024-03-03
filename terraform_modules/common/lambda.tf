@@ -33,7 +33,7 @@ resource "aws_lambda_layer_version" "repository_feed_archives" {
 }
 
 # ================================================================
-# Lambda Entry Archiver
+# Layer Repository  Threads
 # ================================================================
 
 data "archive_file" "layer_repository_threads" {

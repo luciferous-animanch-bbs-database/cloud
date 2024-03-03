@@ -97,17 +97,17 @@ resource "aws_iam_role_policy_attachment" "event_bridge_api_destination" {
 # Role Pipe Insert Archived Entry
 # ================================================================
 
-resource "aws_iam_role" "pipes_insert_archived_entry" {
+resource "aws_iam_role" "pipes_dynamodb_to_sqs" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy_pipes.json
 }
 
-resource "aws_iam_role_policy_attachment" "pipes_insert_archived_entry" {
+resource "aws_iam_role_policy_attachment" "pipes_dynamodb_to_sqs" {
   for_each = {
     a = "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
     b = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
   }
   policy_arn = each.value
-  role       = aws_iam_role.pipes_insert_archived_entry.name
+  role       = aws_iam_role.pipes_dynamodb_to_sqs.name
 }
 
 # ================================================================
@@ -125,23 +125,6 @@ resource "aws_iam_role_policy_attachment" "lambda_error_notificator" {
   }
   policy_arn = each.value
   role       = aws_iam_role.lambda_error_notificator.name
-}
-
-# ================================================================
-# Role Lambda Feed Trailer
-# ================================================================
-
-resource "aws_iam_role" "lambda_feed_trailer" {
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_feed_trailer" {
-  for_each = {
-    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-    b = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  }
-  policy_arn = each.value
-  role       = aws_iam_role.lambda_feed_trailer.name
 }
 
 # ================================================================
