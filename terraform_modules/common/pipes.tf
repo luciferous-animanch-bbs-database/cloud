@@ -17,3 +17,23 @@ resource "aws_pipes_pipe" "insert_archived_entry" {
     }
   }
 }
+
+resource "aws_pipes_pipe" "insert_thread" {
+  source   = aws_dynamodb_table.threads.stream_arn
+  target   = aws_sqs_queue.insert_thread.arn
+  role_arn = aws_iam_role.pipes_dynamodb_to_sqs.arn
+
+  source_parameters {
+    dynamodb_stream_parameters {
+      starting_position = "TRIM_HORIZON"
+    }
+
+    filter_criteria {
+      filter {
+        pattern = jsonencode({
+          eventName = ["INSERT"]
+        })
+      }
+    }
+  }
+}
