@@ -4,6 +4,6 @@ resource "aws_sqs_queue" "inert_archived_entry" {
 }
 
 resource "aws_sqs_queue" "insert_thread" {
-  name_prefix                = "insert_thread"
+  name_prefix                = "insert_thread_"
   visibility_timeout_seconds = 150
 }
