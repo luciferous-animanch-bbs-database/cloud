@@ -160,3 +160,21 @@ resource "aws_iam_role_policy_attachment" "lambda_entry_parser" {
   policy_arn = each.value
   role       = aws_iam_role.lambda_entry_parser.name
 }
+
+# ================================================================
+# Role Lambda Thumbnail Downloader
+# ================================================================
+
+resource "aws_iam_role" "lambda_thumbnail_downloader" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_thumbnail_downloader" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+    b = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    c = "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.lambda_thumbnail_downloader.name
+}

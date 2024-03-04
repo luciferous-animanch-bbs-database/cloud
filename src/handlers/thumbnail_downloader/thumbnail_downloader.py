@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from hashlib import sha224
-from http.client import HTTPResponse
 from io import BytesIO
-from os.path import basename
 
 import pillow_avif
 from aws_lambda_powertools.utilities.data_classes import event_source

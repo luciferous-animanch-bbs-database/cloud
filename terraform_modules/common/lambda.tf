@@ -16,40 +16,6 @@ resource "aws_lambda_layer_version" "common" {
 }
 
 # ================================================================
-# Layer Repository Feed Archives
-# ================================================================
-
-data "archive_file" "layer_repository_feed_archives" {
-  type        = "zip"
-  output_path = "layer_repository_feed_archives.zip"
-  source_dir  = "${path.root}/src/layers/repository_feed_archives"
-}
-
-resource "aws_lambda_layer_version" "repository_feed_archives" {
-  layer_name = "layer-repository-feed_archives"
-
-  filename         = data.archive_file.layer_repository_feed_archives.output_path
-  source_code_hash = data.archive_file.layer_repository_feed_archives.output_base64sha256
-}
-
-# ================================================================
-# Layer Repository  Threads
-# ================================================================
-
-data "archive_file" "layer_repository_threads" {
-  type        = "zip"
-  output_path = "layer_repository_threads.zip"
-  source_dir  = "${path.root}/src/layers/repository_threads"
-}
-
-resource "aws_lambda_layer_version" "repository_threads" {
-  layer_name = "layer_repository_threads"
-
-  filename         = data.archive_file.layer_repository_threads.output_path
-  source_code_hash = data.archive_file.layer_repository_threads.output_base64sha256
-}
-
-# ================================================================
 # Lambda Error Notificator
 # ================================================================
 
@@ -157,3 +123,5 @@ resource "aws_lambda_event_source_mapping" "lambda_entry_parser" {
     maximum_concurrency = 100
   }
 }
+
+
