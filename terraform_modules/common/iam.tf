@@ -166,7 +166,7 @@ resource "aws_iam_role_policy_attachment" "lambda_entry_parser" {
 # ================================================================
 
 resource "aws_iam_role" "lambda_thumbnail_downloader" {
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_thumbnail_downloader" {
