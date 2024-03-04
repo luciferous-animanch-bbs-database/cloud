@@ -5,9 +5,9 @@ from common.aws import create_client, create_resource
 from common.dataclasses import load_environment
 from common.logger import create_logger, logging_function, logging_handler
 from common.models.feed import Entry, Feed
+from common.repositories.entry_archives import RepositoryEntryArchives
 from mypy_boto3_dynamodb import DynamoDBClient
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
-from repository.entry_archives import RepositoryEntryArchives
 
 
 @dataclass

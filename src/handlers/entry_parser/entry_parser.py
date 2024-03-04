@@ -7,9 +7,9 @@ from common.aws import create_resource
 from common.dataclasses import load_environment
 from common.logger import create_logger, logging_function, logging_handler
 from common.models.feed import Entry
+from common.repositories.entry_archives import RepositoryEntryArchives
+from common.repositories.threads import ModelItemThread, RepositoryThreads
 from mypy_boto3_dynamodb import DynamoDBServiceResource
-from repository.entry_archives import RepositoryEntryArchives
-from repository.threads import ModelItemThread, RepositoryThreads
 
 logger = create_logger(__name__)
 jst = timezone(offset=timedelta(hours=+9), name="JST")
