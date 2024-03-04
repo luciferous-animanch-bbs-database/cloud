@@ -97,7 +97,6 @@ module "lambda_entry_parser" {
     DDB_TABLE_NAME_THREADS        = aws_dynamodb_table.threads.name
   }
 
-
   layers = [
     data.aws_ssm_parameter.base_layer_arn.value,
     aws_lambda_layer_version.common.arn,
@@ -121,4 +120,33 @@ resource "aws_lambda_event_source_mapping" "lambda_entry_parser" {
   }
 }
 
+# ================================================================
+# Lambda Thumbnail Downloader
+# ================================================================
 
+module "lambda_thumbnail_downloader" {
+  source = "../lambda_function"
+
+  handler_dir_name = "thumbnail_downloader"
+  handler          = "thumbnail_downloader.handler"
+  memory_size      = 128
+  timeout          = aws_sqs_queue.insert_thread.visibility_timeout_seconds
+  role_arn         = aws_iam_role.lambda_thumbnail_downloader.arn
+
+  reserved_concurrent_executions = 1
+
+  environment_variables = {
+    DYNAMODB_TABLE_NAME = aws_dynamodb_table.threads.name
+    S3_BUCKET           = aws_s3_bucket.thumbnails.bucket
+    S3_PREFIX           = local.s3.prefix.thumbnails
+  }
+
+  layers = [
+    data.aws_ssm_parameter.base_layer_arn.value,
+    aws_lambda_layer_version.common.arn,
+  ]
+
+  system_name                         = var.system_name
+  region                              = var.region
+  subscription_destination_lambda_arn = module.error_notificator.function_arn
+}
