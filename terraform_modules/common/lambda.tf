@@ -64,7 +64,6 @@ module "lambda_entry_archiver" {
   layers = [
     data.aws_ssm_parameter.base_layer_arn.value,
     aws_lambda_layer_version.common.arn,
-    aws_lambda_layer_version.repository_feed_archives.arn
   ]
 
   system_name                         = var.system_name
@@ -102,8 +101,6 @@ module "lambda_entry_parser" {
   layers = [
     data.aws_ssm_parameter.base_layer_arn.value,
     aws_lambda_layer_version.common.arn,
-    aws_lambda_layer_version.repository_feed_archives.arn,
-    aws_lambda_layer_version.repository_threads.arn
   ]
 
   system_name                         = var.system_name
