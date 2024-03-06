@@ -137,6 +137,7 @@ module "lambda_thumbnail_downloader" {
     DYNAMODB_TABLE_NAME = aws_dynamodb_table.threads.name
     S3_BUCKET           = aws_s3_bucket.thumbnails.bucket
     S3_PREFIX           = local.s3.prefix.thumbnails
+    QUEUE_URL           = aws_sqs_queue.insert_thread.url
   }
 
   layers = [

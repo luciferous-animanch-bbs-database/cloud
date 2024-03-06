@@ -174,6 +174,7 @@ resource "aws_iam_role_policy_attachment" "lambda_thumbnail_downloader" {
     a = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
     b = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
     c = "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+    d = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
   }
   policy_arn = each.value
   role       = aws_iam_role.lambda_thumbnail_downloader.name
