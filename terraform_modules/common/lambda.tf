@@ -133,8 +133,6 @@ module "lambda_thumbnail_downloader" {
   timeout          = aws_sqs_queue.insert_thread.visibility_timeout_seconds
   role_arn         = aws_iam_role.lambda_thumbnail_downloader.arn
 
-  reserved_concurrent_executions = 1
-
   environment_variables = {
     DYNAMODB_TABLE_NAME = aws_dynamodb_table.threads.name
     S3_BUCKET           = aws_s3_bucket.thumbnails.bucket
@@ -155,7 +153,11 @@ resource "aws_lambda_event_source_mapping" "lambda_thumbnail_downloader" {
   event_source_arn = aws_sqs_queue.insert_thread.arn
   function_name    = module.lambda_thumbnail_downloader.function_alias_arn
   batch_size       = 1
-  enabled          = false
+  enabled          = true
 
   maximum_batching_window_in_seconds = aws_sqs_queue.insert_thread.visibility_timeout_seconds
+
+  scaling_config {
+    maximum_concurrency = 10
+  }
 }
