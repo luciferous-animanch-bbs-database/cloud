@@ -129,7 +129,7 @@ module "lambda_thumbnail_downloader" {
 
   handler_dir_name = "thumbnail_downloader"
   handler          = "thumbnail_downloader.handler"
-  memory_size      = 128
+  memory_size      = 256
   timeout          = aws_sqs_queue.insert_thread.visibility_timeout_seconds
   role_arn         = aws_iam_role.lambda_thumbnail_downloader.arn
 
