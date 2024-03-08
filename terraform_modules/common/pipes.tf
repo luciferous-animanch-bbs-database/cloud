@@ -22,6 +22,10 @@ resource "terraform_data" "insert_thread_event_names" {
   input = ["INSERT", "MODIFY"]
 }
 
+resource "terraform_data" "insert_thread_start_position" {
+  input = "TRIM_HORIZON"
+}
+
 resource "aws_pipes_pipe" "insert_thread" {
   source        = aws_dynamodb_table.threads.stream_arn
   target        = aws_sqs_queue.insert_thread.arn
@@ -30,7 +34,7 @@ resource "aws_pipes_pipe" "insert_thread" {
 
   source_parameters {
     dynamodb_stream_parameters {
-      starting_position = "TRIM_HORIZON"
+      starting_position = terraform_data.insert_thread_start_position.output
     }
 
     filter_criteria {
