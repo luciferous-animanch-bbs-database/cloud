@@ -48,10 +48,10 @@ def handler(
     try:
         http_response = sec3_http_get_client(thumbnail)
     except HTTPError as e:
-        if e.status != 502:
-            raise
-        send_message(event=event, queue_url=env.queue_url, client=client_sqs)
-        return
+        if e.status in {502, 504, 521, 522}:
+            send_message(event=event, queue_url=env.queue_url, client=client_sqs)
+            return
+        raise
     binary_raw = http_response.read()
     binary_avif = convert_to_avif(binary=binary_raw)
     put_object(bucket=env.s3_bucket, key=key_s3, body=binary_avif, client=client_s3)
