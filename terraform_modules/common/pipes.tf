@@ -23,7 +23,7 @@ resource "terraform_data" "insert_thread_event_names" {
 }
 
 resource "terraform_data" "insert_thread_start_position" {
-  input = "TRIM_HORIZON"
+  input = "LATEST"
 }
 
 resource "aws_pipes_pipe" "insert_thread" {
