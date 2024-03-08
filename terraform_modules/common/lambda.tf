@@ -159,6 +159,6 @@ resource "aws_lambda_event_source_mapping" "lambda_thumbnail_downloader" {
   maximum_batching_window_in_seconds = aws_sqs_queue.insert_thread.visibility_timeout_seconds
 
   scaling_config {
-    maximum_concurrency = 10
+    maximum_concurrency = 25
   }
 }
