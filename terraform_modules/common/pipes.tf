@@ -32,7 +32,7 @@ resource "aws_pipes_pipe" "insert_thread" {
     filter_criteria {
       filter {
         pattern = jsonencode({
-          eventName = ["INSERT"]
+          eventName = ["INSERT", "MODIFY"]
         })
       }
     }
