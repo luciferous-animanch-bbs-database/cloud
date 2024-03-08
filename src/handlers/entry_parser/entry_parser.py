@@ -79,7 +79,7 @@ def convert(*, entry: Entry) -> ModelItemThread:
         sort_key=f"{unixtime}={url}",
         url=url,
         title=entry["title"],
-        thumbnail=entry["summary"],
+        thumbnail=entry["summary"].replace("thumb_l", "thumb_s"),
         unixtime=unixtime,
         datetime=datetime_str,
     )
