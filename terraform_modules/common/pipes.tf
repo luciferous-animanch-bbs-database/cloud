@@ -18,6 +18,10 @@ resource "aws_pipes_pipe" "insert_archived_entry" {
   }
 }
 
+resource "terraform_data" "insert_thread_event_names" {
+  input = ["INSERT"]
+}
+
 resource "aws_pipes_pipe" "insert_thread" {
   source   = aws_dynamodb_table.threads.stream_arn
   target   = aws_sqs_queue.insert_thread.arn
@@ -32,7 +36,7 @@ resource "aws_pipes_pipe" "insert_thread" {
     filter_criteria {
       filter {
         pattern = jsonencode({
-          eventName = ["INSERT", "MODIFY"]
+          eventName = terraform_data.insert_thread_event_names.output
         })
       }
     }
