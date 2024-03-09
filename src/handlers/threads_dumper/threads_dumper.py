@@ -1,4 +1,5 @@
 import json
+from base64 import b64encode
 from boto3.s3.transfer import TransferConfig
 from dataclasses import dataclass
 from hashlib import sha256
@@ -62,7 +63,8 @@ def create_body(*, items: list[ModelItemThread]) -> bytes:
 
 @logging_function(logger)
 def calculate_check_sum_sha256(*, binary: bytes) -> str:
-    return sha256(binary).hexdigest()
+    binary = sha256(binary).digest()
+    return b64encode(binary).decode()
 
 
 @logging_function(logger)
