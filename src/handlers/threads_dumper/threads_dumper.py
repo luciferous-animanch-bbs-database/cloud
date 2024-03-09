@@ -1,9 +1,11 @@
 import json
 from base64 import b64encode
-from boto3.s3.transfer import TransferConfig
 from dataclasses import dataclass
 from hashlib import sha256
+from io import BytesIO
+from random import randbytes
 
+from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import ClientError
 from common.aws import create_client
 from common.dataclasses import load_environment
@@ -12,8 +14,6 @@ from common.repositories.threads import ModelItemThread, RepositoryThreads
 from mypy_boto3_dynamodb import DynamoDBClient
 from mypy_boto3_s3 import S3Client
 from zstd import compress
-from io import BytesIO
-from random import randbytes
 
 logger = create_logger(__name__)
 
@@ -44,6 +44,7 @@ def handler(
         data={"local": check_sum_local, "remote": check_sum_remote, "size": len(body)},
     )
     if check_sum_local == check_sum_remote:
+        logger.info("not put")
         return
     put_object(
         bucket=env.s3_bucket,
@@ -70,7 +71,7 @@ def calculate_check_sum_sha256(*, binary: bytes) -> str:
 @logging_function(logger)
 def get_check_sum_256(*, bucket: str, key: str, client: S3Client) -> str:
     try:
-        resp = client.head_object(Bucket=bucket, Key=key)
+        resp = client.head_object(Bucket=bucket, Key=key, ChecksumMode="ENABLED")
         return resp.get("ChecksumSHA256", "")
     except ClientError as e:
         if e.response["Error"]["Code"] == "404":
@@ -80,7 +81,7 @@ def get_check_sum_256(*, bucket: str, key: str, client: S3Client) -> str:
 
 
 @logging_function(logger)
-def put_object(*, bucket: str, key: str, body: bytes, check_sum: str, client: S3Client):
+def put_object(*, bucket: str, key: str, body: bytes, client: S3Client):
     client.put_object(
         Bucket=bucket,
         Key=key,
