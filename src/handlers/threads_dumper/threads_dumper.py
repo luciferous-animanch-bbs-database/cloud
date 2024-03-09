@@ -87,5 +87,5 @@ def put_object(*, bucket: str, key: str, body: bytes, client: S3Client):
         Key=key,
         Body=body,
         ContentType="application/zstd",
-        ChecksumSHA256=check_sum,
+        ChecksumAlgorithm="SHA256"
     )
