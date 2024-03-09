@@ -10,6 +10,7 @@ from common.repositories.threads import ModelItemThread, RepositoryThreads
 from mypy_boto3_dynamodb import DynamoDBClient
 from mypy_boto3_s3 import S3Client
 from zstd import compress
+from io import BytesIO
 
 logger = create_logger(__name__)
 
@@ -70,9 +71,7 @@ def get_check_sum_256(*, bucket: str, key: str, client: S3Client) -> str:
 
 @logging_function(logger)
 def put_object(*, bucket: str, key: str, body: bytes, check_sum: str, client: S3Client):
-    client.put_object(
-        Bucket=bucket,
-        Key=key,
-        Body=body,
-        ContentType="application/zstd",
-    )
+    with BytesIO(body) as f:
+        client.upload_fileobj(
+            Fileobj=f, Bucket=bucket, Key=key, ExtraArgs={"ChecksumAlgorithm": "SHA256"}
+        )
