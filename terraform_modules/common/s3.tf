@@ -2,6 +2,12 @@ locals {
   s3 = {
     prefix = {
       thumbnails = "thumbnails"
+      data       = "data"
+    }
+    key = {
+      data = {
+        threads = "data/threads.json"
+      }
     }
   }
 }
@@ -68,4 +74,37 @@ data "aws_iam_policy_document" "bucket_policy_webapp" {
 resource "aws_s3_bucket_policy" "webapp" {
   bucket = aws_s3_bucket.webapp.id
   policy = data.aws_iam_policy_document.bucket_policy_webapp.json
+}
+
+# ================================================================
+# Bucket CloudFront WebApp
+# ================================================================
+
+module "bucket_cloudfront_webapp" {
+  source = "../s3_bucket_backend_cloudfront"
+
+  bucket_prefix               = "cloudfront-webapp-"
+  cloudfront_distribution_arn = aws_cloudfront_distribution.cdn.arn
+}
+
+# ================================================================
+# Bucket CloudFront WebApp
+# ================================================================
+
+module "bucket_cloudfront_thumbnails" {
+  source = "../s3_bucket_backend_cloudfront"
+
+  bucket_prefix               = "cloudfront-thumbnails-"
+  cloudfront_distribution_arn = aws_cloudfront_distribution.cdn.arn
+}
+
+# ================================================================
+# Bucket CloudFront WebApp
+# ================================================================
+
+module "bucket_cloudfront_data" {
+  source = "../s3_bucket_backend_cloudfront"
+
+  bucket_prefix               = "cloudfront-thumbnails-"
+  cloudfront_distribution_arn = aws_cloudfront_distribution.cdn.arn
 }

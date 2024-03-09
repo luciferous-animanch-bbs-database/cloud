@@ -62,7 +62,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   origin {
-    domain_name              = aws_s3_bucket.webapp.bucket_regional_domain_name
+    domain_name              = module.bucket_cloudfront_webapp.bucket_regional_domain_name
     origin_id                = local.cloudfront.origin.webapp
     origin_access_control_id = aws_cloudfront_origin_access_control.cdn.id
     s3_origin_config {
@@ -71,7 +71,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   origin {
-    domain_name              = aws_s3_bucket.thumbnails.bucket_regional_domain_name
+    domain_name              = module.bucket_cloudfront_thumbnails.bucket_regional_domain_name
     origin_id                = local.cloudfront.origin.thumbnails
     origin_access_control_id = aws_cloudfront_origin_access_control.cdn.id
     s3_origin_config {
