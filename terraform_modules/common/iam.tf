@@ -111,6 +111,11 @@ data "aws_iam_policy_document" "policy_dynamodb_scan_threads" {
     effect    = "Allow"
     actions   = ["dynamodb:Scan"]
     resources = [aws_dynamodb_table.threads.arn]
+    condition {
+      test     = "StringLike"
+      values   = ["https://${aws_cloudfront_distribution.cdn.domain_name}/*"]
+      variable = "aws:referer"
+    }
   }
 }
 

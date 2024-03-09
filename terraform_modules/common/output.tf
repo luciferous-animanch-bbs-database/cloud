@@ -8,5 +8,4 @@ output "cloudfront_url" {
 
 output "cognito_identity_pool_id" {
   value     = aws_cognito_identity_pool.web.id
-  sensitive = true
 }
