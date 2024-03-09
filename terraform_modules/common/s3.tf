@@ -105,6 +105,6 @@ module "bucket_cloudfront_thumbnails" {
 module "bucket_cloudfront_data" {
   source = "../s3_bucket_backend_cloudfront"
 
-  bucket_prefix               = "cloudfront-thumbnails-"
+  bucket_prefix               = "cloudfront-data-"
   cloudfront_distribution_arn = aws_cloudfront_distribution.cdn.arn
 }
