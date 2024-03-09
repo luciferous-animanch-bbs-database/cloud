@@ -44,8 +44,7 @@ def handler(
 
 @logging_function(logger)
 def create_body(*, items: list[ModelItemThread]) -> bytes:
-    # intの列が含まれるためdefaultで変換を行う必要がある
-    text = json.dumps(items, default=int)
+    text = json.dumps([x.to_dict() for x in items])
     binary = text.encode()
     return compress(binary, 9)
 

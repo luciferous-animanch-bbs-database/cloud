@@ -21,6 +21,18 @@ class ModelItemThread:
     datetime: str
     updated_at: Optional[str] = field(default=None)
 
+    def to_dict(self) -> dict:
+        return {
+            "category": self.category,
+            "sort_key": self.sort_key,
+            "url": self.url,
+            "title": self.title,
+            "thumbnail": self.thumbnail,
+            "unixtime": int(self.unixtime),
+            "datetime": self.datetime,
+            "updated_at": self.updated_at,
+        }
+
 
 @dataclass
 class KeysThread:
