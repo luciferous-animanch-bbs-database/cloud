@@ -74,6 +74,5 @@ def put_object(*, bucket: str, key: str, body: bytes, check_sum: str, client: S3
         Bucket=bucket,
         Key=key,
         Body=body,
-        ChecksumSHA256=check_sum,
         ContentType="application/zstd",
     )
