@@ -172,7 +172,7 @@ module "lambda_threads_dumper" {
 
   handler_dir_name = "threads_dumper"
   handler          = "threads_dumper.handler"
-  memory_size      = 256
+  memory_size      = 512
   timeout          = 180
   role_arn         = aws_iam_role.lambda_threads_dumper.arn
 
