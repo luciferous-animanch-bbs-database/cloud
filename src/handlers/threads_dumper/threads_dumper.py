@@ -79,6 +79,6 @@ def put_object(*, bucket: str, key: str, body: bytes, check_sum: str, client: S3
             Fileobj=f,
             Bucket=bucket,
             Key=key,
-            ExtraArgs={"ChecksumAlgorithm": "SHA256"},
+            # ExtraArgs={"ChecksumAlgorithm": "SHA256"},
             Config=TransferConfig(multipart_threshold=1024),
         )
