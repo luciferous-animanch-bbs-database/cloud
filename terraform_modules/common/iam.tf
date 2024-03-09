@@ -41,6 +41,29 @@ data "aws_iam_policy_document" "assume_role_policy_pipes" {
   }
 }
 
+data "aws_iam_policy_document" "assume_role_policy_cognito_unauth" {
+  policy_id = "assume_role_policy_cognito_unauth"
+  statement {
+    sid     = "AssumeRolePolicyCognitoUnauth"
+    effect  = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      identifiers = ["cognito-identity.amazonaws.com"]
+      type        = "Federated"
+    }
+    condition {
+      test     = "StringEquals"
+      values   = [aws_cognito_identity_pool.web.id]
+      variable = "cognito-identity.amazonaws.com:aud"
+    }
+    condition {
+      test     = "ForAnyValue:StringLike"
+      values   = ["unauthenticated"]
+      variable = "cognito-identity.amazonaws.com:amr"
+    }
+  }
+}
+
 # ================================================================
 # Policy EventBridge Invoke API Destination
 # ================================================================
@@ -75,6 +98,24 @@ data "aws_iam_policy_document" "policy_event_bridge_put_events" {
 
 resource "aws_iam_policy" "event_bridge_put_events" {
   policy = data.aws_iam_policy_document.policy_event_bridge_put_events.json
+}
+
+# ================================================================
+# Policy DynamoDB Scan Threads
+# ================================================================
+
+data "aws_iam_policy_document" "policy_dynamodb_scan_threads" {
+  policy_id = "policy_dynamodb_scan_threads"
+  statement {
+    sid       = "AllowDynamoDBScanThreads"
+    effect    = "Allow"
+    actions   = ["dynamodb:Scan"]
+    resources = [aws_dynamodb_table.threads.arn]
+  }
+}
+
+resource "aws_iam_policy" "dynamodb_scan_threads" {
+  policy = data.aws_iam_policy_document.policy_dynamodb_scan_threads
 }
 
 # ================================================================
@@ -178,4 +219,20 @@ resource "aws_iam_role_policy_attachment" "lambda_thumbnail_downloader" {
   }
   policy_arn = each.value
   role       = aws_iam_role.lambda_thumbnail_downloader.name
+}
+
+# ================================================================
+# Role Cognito Unauthenticated
+# ================================================================
+
+resource "aws_iam_role" "cognito_unauth" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_cognito_unauth.json
+}
+
+resource "aws_iam_role_policy_attachment" "cognito_unauth" {
+  for_each = {
+    a = aws_iam_policy.dynamodb_scan_threads.arn
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.cognito_unauth.name
 }
