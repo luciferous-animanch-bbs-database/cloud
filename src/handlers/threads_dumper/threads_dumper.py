@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from hashlib import sha256
 
+from botocore.exceptions import ClientError
 from common.aws import create_client
 from common.dataclasses import load_environment
 from common.logger import create_logger, logging_function, logging_handler
@@ -59,8 +60,11 @@ def get_check_sum_256(*, bucket: str, key: str, client: S3Client) -> str:
     try:
         resp = client.head_object(Bucket=bucket, Key=key)
         return resp.get("ChecksumSHA256", "")
-    except client.exceptions.NoSuchKey:
-        return ""
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "404":
+            return ""
+        else:
+            raise
 
 
 @logging_function(logger)
