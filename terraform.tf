@@ -58,3 +58,7 @@ output "s3_bucket_webapp" {
 output "cloudfront_url" {
   value = module.common.cloudfront_url
 }
+
+output "cognito_identity_pool_id" {
+  value = module.common.cognito_identity_pool_id
+}
