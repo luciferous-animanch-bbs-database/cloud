@@ -115,7 +115,7 @@ data "aws_iam_policy_document" "policy_dynamodb_scan_threads" {
 }
 
 resource "aws_iam_policy" "dynamodb_scan_threads" {
-  policy = data.aws_iam_policy_document.policy_dynamodb_scan_threads
+  policy = data.aws_iam_policy_document.policy_dynamodb_scan_threads.json
 }
 
 # ================================================================
