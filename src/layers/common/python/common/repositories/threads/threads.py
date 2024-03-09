@@ -1,5 +1,6 @@
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from decimal import Decimal
+from typing import Optional
 
 from boto3.dynamodb.types import TypeDeserializer
 from common.logger import create_logger, logging_function
@@ -18,6 +19,7 @@ class ModelItemThread:
     thumbnail: str
     unixtime: int | Decimal
     datetime: str
+    updated_at: Optional[str] = field(default=None)
 
 
 @dataclass
