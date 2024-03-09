@@ -111,7 +111,7 @@ resource "aws_lambda_event_source_mapping" "lambda_entry_parser" {
   event_source_arn = aws_sqs_queue.inert_archived_entry.arn
   function_name    = module.lambda_entry_parser.function_alias_arn
   batch_size       = 1
-  enabled          = false
+  enabled          = local.flags.lambda.sqs_trigger.entry_parser
 
   maximum_batching_window_in_seconds = aws_sqs_queue.inert_archived_entry.visibility_timeout_seconds
 
@@ -154,7 +154,7 @@ resource "aws_lambda_event_source_mapping" "lambda_thumbnail_downloader" {
   event_source_arn = aws_sqs_queue.insert_thread.arn
   function_name    = module.lambda_thumbnail_downloader.function_alias_arn
   batch_size       = 1
-  enabled          = false
+  enabled          = local.flags.lambda.sqs_trigger.thumbnail_downloader
 
   maximum_batching_window_in_seconds = aws_sqs_queue.insert_thread.visibility_timeout_seconds
 
