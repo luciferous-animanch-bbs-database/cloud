@@ -12,6 +12,7 @@ from mypy_boto3_dynamodb import DynamoDBClient
 from mypy_boto3_s3 import S3Client
 from zstd import compress
 from io import BytesIO
+from random import randbytes
 
 logger = create_logger(__name__)
 
@@ -31,18 +32,19 @@ def handler(
     client_s3: S3Client = create_client("s3"),
 ):
     env = load_environment(class_dataclass=EnvironmentVariables)
-    items = RepositoryThreads.scan(table_name=env.ddb_table_name, client=client_ddb)
-    body = create_body(items=items)
-    check_sum_local = calculate_check_sum_sha256(binary=body)
-    check_sum_remote = get_check_sum_256(
-        bucket=env.s3_bucket, key=env.s3_key, client=client_s3
-    )
-    logger.info(
-        "check sums",
-        data={"local": check_sum_local, "remote": check_sum_remote, "size": len(body)},
-    )
-    if check_sum_local == check_sum_remote:
-        return
+    # items = RepositoryThreads.scan(table_name=env.ddb_table_name, client=client_ddb)
+    # body = create_body(items=items)
+    # check_sum_local = calculate_check_sum_sha256(binary=body)
+    # check_sum_remote = get_check_sum_256(
+    #     bucket=env.s3_bucket, key=env.s3_key, client=client_s3
+    # )
+    # logger.info(
+    #     "check sums",
+    #     data={"local": check_sum_local, "remote": check_sum_remote, "size": len(body)},
+    # )
+    # if check_sum_local == check_sum_remote:
+    #     return
+    body = randbytes(1024 * 1024 * 2)
     put_object(bucket=env.s3_bucket, key=env.s3_key, body=body, client=client_s3)
 
 
