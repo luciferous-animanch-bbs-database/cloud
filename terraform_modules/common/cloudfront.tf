@@ -51,7 +51,8 @@ resource "aws_cloudfront_distribution" "cdn" {
 
   restrictions {
     geo_restriction {
-      restriction_type = ["JP", "US"]
+      restriction_type = "whitelist"
+      locations        = ["JP", "US"]
     }
   }
 
@@ -87,7 +88,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   ordered_cache_behavior {
     allowed_methods          = ["GET", "HEAD"]
     cached_methods           = ["GET", "HEAD"]
-    path_pattern             = "/${local.s3.prefix}/*"
+    path_pattern             = "/${local.s3.prefix.thumbnails}/*"
     target_origin_id         = local.cloudfront.origin.thumbnails
     compress                 = true
     viewer_protocol_policy   = "https-only"
