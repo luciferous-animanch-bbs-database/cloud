@@ -1,4 +1,5 @@
 import json
+from boto3.s3.transfer import TransferConfig
 from dataclasses import dataclass
 from hashlib import sha256
 
@@ -73,5 +74,9 @@ def get_check_sum_256(*, bucket: str, key: str, client: S3Client) -> str:
 def put_object(*, bucket: str, key: str, body: bytes, check_sum: str, client: S3Client):
     with BytesIO(body) as f:
         client.upload_fileobj(
-            Fileobj=f, Bucket=bucket, Key=key, ExtraArgs={"ChecksumAlgorithm": "SHA256"}
+            Fileobj=f,
+            Bucket=bucket,
+            Key=key,
+            ExtraArgs={"ChecksumAlgorithm": "SHA256"},
+            Config=TransferConfig(multipart_threshold=1024),
         )
