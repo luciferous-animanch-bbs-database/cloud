@@ -3,6 +3,7 @@ locals {
     origin = {
       webapp     = "webapp"
       thumbnails = "thumbnails"
+      data       = "data"
     }
   }
 }
@@ -15,7 +16,7 @@ resource "aws_cloudfront_origin_access_control" "cdn" {
 }
 
 resource "aws_cloudfront_response_headers_policy" "webapp" {
-  name = "no-store"
+  name = "webapp"
 
   security_headers_config {
     frame_options {
@@ -37,6 +38,30 @@ resource "aws_cloudfront_response_headers_policy" "webapp" {
       override = true
       value    = "no-store, no-cache"
     }
+  }
+}
+
+resource "aws_cloudfront_response_headers_policy" "data" {
+  name = "data"
+
+  custom_headers_config {
+    items {
+      header   = "Cache-Control"
+      override = true
+      value    = "max-age=450"
+    }
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "data" {
+  name        = "data-policy"
+  default_ttl = 450
+  max_ttl     = 900
+  min_ttl     = 1
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    enable_accept_encoding_brotli = true
+    enable_accept_encoding_gzip   = true
   }
 }
 
@@ -79,6 +104,15 @@ resource "aws_cloudfront_distribution" "cdn" {
     }
   }
 
+  origin {
+    domain_name              = module.bucket_cloudfront_data.bucket_regional_domain_name
+    origin_id                = local.cloudfront.origin.data
+    origin_access_control_id = aws_cloudfront_origin_access_control.cdn.id
+    s3_origin_config {
+      origin_access_identity = ""
+    }
+  }
+
   default_cache_behavior {
     allowed_methods            = ["GET", "HEAD"]
     cached_methods             = ["GET", "HEAD"]
@@ -99,5 +133,17 @@ resource "aws_cloudfront_distribution" "cdn" {
     viewer_protocol_policy   = "https-only"
     cache_policy_id          = "658327ea-f89d-4fab-a63d-7e88639e58f6"
     origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
+  }
+
+  ordered_cache_behavior {
+    allowed_methods            = ["GET", "HEAD"]
+    cached_methods             = ["GET", "HEAD"]
+    path_pattern               = "/${local.s3.prefix.data}/*"
+    target_origin_id           = local.cloudfront.origin.data
+    compress                   = true
+    viewer_protocol_policy     = "https-only"
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.data.id
+    cache_policy_id            = aws_cloudfront_cache_policy.data.id
+    origin_request_policy_id   = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
   }
 }
