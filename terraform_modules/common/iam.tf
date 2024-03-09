@@ -113,7 +113,10 @@ data "aws_iam_policy_document" "policy_dynamodb_scan_threads" {
     resources = [aws_dynamodb_table.threads.arn]
     condition {
       test     = "StringLike"
-      values   = ["https://${aws_cloudfront_distribution.cdn.domain_name}/*"]
+      values   = [
+        "https://${aws_cloudfront_distribution.cdn.domain_name}/*",
+        "https://cf02.luciferous.link/referer_test/*"
+      ]
       variable = "aws:referer"
     }
   }
