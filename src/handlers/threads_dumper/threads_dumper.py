@@ -32,19 +32,18 @@ def handler(
     client_s3: S3Client = create_client("s3"),
 ):
     env = load_environment(class_dataclass=EnvironmentVariables)
-    # items = RepositoryThreads.scan(table_name=env.ddb_table_name, client=client_ddb)
-    # body = create_body(items=items)
-    # check_sum_local = calculate_check_sum_sha256(binary=body)
-    # check_sum_remote = get_check_sum_256(
-    #     bucket=env.s3_bucket, key=env.s3_key, client=client_s3
-    # )
-    # logger.info(
-    #     "check sums",
-    #     data={"local": check_sum_local, "remote": check_sum_remote, "size": len(body)},
-    # )
-    # if check_sum_local == check_sum_remote:
-    #     return
-    body = randbytes(1024 * 1024 * 2)
+    items = RepositoryThreads.scan(table_name=env.ddb_table_name, client=client_ddb)
+    body = create_body(items=items)
+    check_sum_local = calculate_check_sum_sha256(binary=body)
+    check_sum_remote = get_check_sum_256(
+        bucket=env.s3_bucket, key=env.s3_key, client=client_s3
+    )
+    logger.info(
+        "check sums",
+        data={"local": check_sum_local, "remote": check_sum_remote, "size": len(body)},
+    )
+    if check_sum_local == check_sum_remote:
+        return
     put_object(bucket=env.s3_bucket, key=env.s3_key, body=body, client=client_s3)
 
 
@@ -73,13 +72,11 @@ def get_check_sum_256(*, bucket: str, key: str, client: S3Client) -> str:
 
 
 @logging_function(logger)
-def put_object(*, bucket: str, key: str, body: bytes, check_sum: str, client: S3Client):
-    # with BytesIO(body) as f:
-    #     client.upload_fileobj(
-    #         Fileobj=f,
-    #         Bucket=bucket,
-    #         Key=key,
-    #         ExtraArgs={"ChecksumAlgorithm": "SHA256"},
-    #         Config=TransferConfig(multipart_threshold=1024),
-    #     )
-    client.put_object(Bucket=bucket, Key=key, Body=body)
+def put_object(*, bucket: str, key: str, body: bytes, client: S3Client):
+    client.put_object(
+        Bucket=bucket,
+        Key=key,
+        Body=body,
+        ContentType="application/zstd",
+        ChecksumAlgorithm="SHA256",
+    )
