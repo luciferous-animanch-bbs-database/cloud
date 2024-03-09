@@ -6,7 +6,7 @@ locals {
     }
     key = {
       data = {
-        threads = "data/threads.json"
+        threads = "data/threads.json.zst"
       }
     }
   }

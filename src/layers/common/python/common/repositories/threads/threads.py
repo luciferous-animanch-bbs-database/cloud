@@ -1,7 +1,12 @@
 from dataclasses import asdict, dataclass
+from decimal import Decimal
 
+from boto3.dynamodb.types import TypeDeserializer
 from common.logger import create_logger, logging_function
+from mypy_boto3_dynamodb import DynamoDBClient
 from mypy_boto3_dynamodb.service_resource import Table
+
+ddb_value_deserializer = TypeDeserializer()
 
 
 @dataclass
@@ -11,7 +16,7 @@ class ModelItemThread:
     url: str
     title: str
     thumbnail: str
-    unixtime: int
+    unixtime: int | Decimal
     datetime: str
 
 
@@ -47,3 +52,18 @@ class RepositoryThreads:
         if item is None:
             raise ItemNotFoundError
         return item["thumbnail"]
+
+    @staticmethod
+    @logging_function(logger)
+    def scan(*, table_name: str, client: DynamoDBClient) -> list[ModelItemThread]:
+        result = []
+
+        for resp in client.get_paginator("scan").paginate(TableName=table_name):
+            result += [
+                ModelItemThread(
+                    **{k: ddb_value_deserializer.deserialize(v) for k, v in x.items()}
+                )
+                for x in resp["Items"]
+            ]
+
+        return result

@@ -205,3 +205,21 @@ resource "aws_iam_role_policy_attachment" "lambda_thumbnail_downloader" {
   policy_arn = each.value
   role       = aws_iam_role.lambda_thumbnail_downloader.name
 }
+
+# ================================================================
+# Role Lambda Threads Dumper
+# ================================================================
+
+resource "aws_iam_role" "lambda_threads_dumper" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_threads_dumper" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    b = "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+    c = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.lambda_threads_dumper.name
+}

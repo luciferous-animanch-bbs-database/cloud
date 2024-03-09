@@ -162,3 +162,32 @@ resource "aws_lambda_event_source_mapping" "lambda_thumbnail_downloader" {
     maximum_concurrency = 10
   }
 }
+
+# ================================================================
+# Lambda Threads Dumper
+# ================================================================
+
+module "lambda_threads_dumper" {
+  source = "../lambda_function"
+
+  handler_dir_name = "threads_dumper"
+  handler          = "threads_dumper.handler"
+  memory_size      = 256
+  timeout          = 180
+  role_arn         = aws_iam_role.lambda_threads_dumper.arn
+
+  environment_variables = {
+    DDB_TABLE_NAME = aws_dynamodb_table.threads.name
+    S3_BUCKET      = module.bucket_cloudfront_data.bucket_name
+    S3_KEY         = local.s3.key.data.threads
+  }
+
+  layers = [
+    data.aws_ssm_parameter.base_layer_arn.value,
+    aws_lambda_layer_version.common.arn,
+  ]
+
+  system_name                         = var.system_name
+  region                              = var.region
+  subscription_destination_lambda_arn = module.error_notificator.function_arn
+}
