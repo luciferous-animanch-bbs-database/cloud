@@ -61,4 +61,5 @@ output "cloudfront_url" {
 
 output "cognito_identity_pool_id" {
   value = module.common.cognito_identity_pool_id
+  sensitive = true
 }

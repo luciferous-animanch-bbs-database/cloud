@@ -1,5 +1,5 @@
 resource "aws_cognito_identity_pool" "web" {
-  identity_pool_name               = "web"
+  identity_pool_name               = "web-auth"
   allow_unauthenticated_identities = true
 }
 
