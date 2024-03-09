@@ -50,3 +50,11 @@ variable "SLACK_INCOMING_WEBHOOK_02" {
   type     = string
   nullable = false
 }
+
+output "s3_bucket_webapp" {
+  value = module.common.s3_bucket_webapp
+}
+
+output "cloudfront_url" {
+  value = module.common.cloudfront_url
+}
