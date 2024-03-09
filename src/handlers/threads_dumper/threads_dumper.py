@@ -36,7 +36,8 @@ def handler(
         bucket=env.s3_bucket, key=env.s3_key, client=client_s3
     )
     logger.info(
-        "check sums", data={"local": check_sum_local, "remote": check_sum_remote}
+        "check sums",
+        data={"local": check_sum_local, "remote": check_sum_remote, "size": len(body)},
     )
     if check_sum_local == check_sum_remote:
         return
@@ -68,11 +69,11 @@ def get_check_sum_256(*, bucket: str, key: str, client: S3Client) -> str:
 
 
 @logging_function(logger)
-def put_object(*, bucket: str, key: str, body: bytes, client: S3Client):
+def put_object(*, bucket: str, key: str, body: bytes, check_sum: str, client: S3Client):
     client.put_object(
         Bucket=bucket,
         Key=key,
         Body=body,
-        ChecksumSHA256=sha256(body).hexdigest(),
+        ChecksumSHA256=check_sum,
         ContentType="application/zstd",
     )
