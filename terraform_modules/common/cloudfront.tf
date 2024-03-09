@@ -48,12 +48,17 @@ resource "aws_cloudfront_distribution" "cdn" {
   price_class         = "PriceClass_200"
   retain_on_delete    = false
   wait_for_deployment = false
+  is_ipv6_enabled     = true
 
   restrictions {
     geo_restriction {
       restriction_type = "whitelist"
       locations        = ["JP", "US"]
     }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
   }
 
   origin {
