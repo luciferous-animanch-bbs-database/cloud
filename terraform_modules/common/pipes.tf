@@ -19,7 +19,7 @@ resource "aws_pipes_pipe" "insert_archived_entry" {
 }
 
 resource "terraform_data" "insert_thread_event_names" {
-  input = ["INSERT", "MODIFY"]
+  input = ["INSERT"]
 }
 
 resource "terraform_data" "insert_thread_start_position" {
