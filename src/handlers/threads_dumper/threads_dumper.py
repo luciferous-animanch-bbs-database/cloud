@@ -50,7 +50,6 @@ def handler(
         bucket=env.s3_bucket,
         key=env.s3_key,
         body=body,
-        check_sum=check_sum_local,
         client=client_s3,
     )
 
@@ -87,5 +86,5 @@ def put_object(*, bucket: str, key: str, body: bytes, client: S3Client):
         Key=key,
         Body=body,
         ContentType="application/zstd",
-        ChecksumAlgorithm="SHA256"
+        ChecksumAlgorithm="SHA256",
     )
