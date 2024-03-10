@@ -56,9 +56,9 @@ def handler(
 
 @logging_function(logger)
 def create_body(*, items: list[ModelItemThread]) -> bytes:
-    text = json.dumps([x.to_dict() for x in items])
+    text = json.dumps({"count": len(items), "threads": [x.to_dict() for x in items]})
     binary = text.encode()
-    return compress(binary, 9)
+    return compress(binary, 16)
 
 
 @logging_function(logger)
