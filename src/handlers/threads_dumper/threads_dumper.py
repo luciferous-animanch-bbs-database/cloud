@@ -39,12 +39,17 @@ def handler(
     check_sum_remote = get_check_sum_256(
         bucket=env.s3_bucket, key=env.s3_key, client=client_s3
     )
+    flag = check_sum_local == check_sum_remote
     logger.info(
         "check sums",
-        data={"local": check_sum_local, "remote": check_sum_remote, "size": len(body)},
+        data={
+            "local": check_sum_local,
+            "remote": check_sum_remote,
+            "equals": flag,
+            "size": len(body),
+        },
     )
-    if check_sum_local == check_sum_remote:
-        logger.info("not put")
+    if flag:
         return
     put_object(
         bucket=env.s3_bucket,
