@@ -56,10 +56,25 @@ resource "aws_cloudwatch_event_target" "error_notificator" {
 resource "aws_cloudwatch_event_rule" "lambda_entry_archiver" {
   name_prefix         = "lambda_entry_archiver"
   state               = true ? "ENABLED" : "DISABLED"
-  schedule_expression = "rate(15 minutes)"
+  schedule_expression = "cron(0/15 * * * ? *)"
 }
 
 resource "aws_cloudwatch_event_target" "lambda_entry_archiver" {
   arn  = module.lambda_entry_archiver.function_alias_arn
   rule = aws_cloudwatch_event_rule.lambda_entry_archiver.name
+}
+
+# ================================================================
+# Lambda Threads Dumper
+# ================================================================
+
+resource "aws_cloudwatch_event_rule" "lambda_threads_dumper" {
+  name_prefix         = "lambda_threads_dumper_"
+  state               = true ? "ENABLED" : "DISABLED"
+  schedule_expression = "cron(7/15 * * * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "lambda_threads_dumper" {
+  arn  = module.lambda_threads_dumper.function_alias_arn
+  rule = aws_cloudwatch_event_rule.lambda_threads_dumper.name
 }

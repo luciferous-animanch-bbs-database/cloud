@@ -191,3 +191,11 @@ module "lambda_threads_dumper" {
   region                              = var.region
   subscription_destination_lambda_arn = module.error_notificator.function_arn
 }
+
+resource "aws_lambda_permission" "lambda_threads_dumper" {
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_threads_dumper.function_name
+  qualifier     = module.lambda_threads_dumper.function_alias_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.lambda_threads_dumper.arn
+}
