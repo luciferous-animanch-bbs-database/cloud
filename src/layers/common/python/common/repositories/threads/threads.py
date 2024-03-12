@@ -1,5 +1,6 @@
 from dataclasses import asdict, dataclass, field
 from decimal import Decimal
+from hashlib import sha224
 from typing import Optional
 
 from boto3.dynamodb.types import TypeDeserializer
@@ -20,6 +21,12 @@ class ModelItemThread:
     unixtime: int | Decimal
     datetime: str
     updated_at: Optional[str] = field(default=None)
+    saved_thumbnail_file: str = field(default=None)
+
+    def __post_init__(self):
+        self.saved_thumbnail_file = (
+            f"{sha224(self.thumbnail.encode()).hexdigest()}.avif"
+        )
 
     def to_dict(self) -> dict:
         return {
