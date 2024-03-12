@@ -24,7 +24,7 @@ def custom_default(obj):
         return {
             "type": "byts",
             "detail": "compress by zstd and base64 encode",
-            "value": b64encode(compress(obj, 9)),
+            "value": b64encode(compress(obj, 9)).decode(),
         }
     try:
         return {"type": str(type(obj)), "value": str(obj)}
