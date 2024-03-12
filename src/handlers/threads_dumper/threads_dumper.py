@@ -1,11 +1,9 @@
 import json
 from base64 import b64encode
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
+from decimal import Decimal
 from hashlib import sha256
-from io import BytesIO
-from random import randbytes
 
-from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import ClientError
 from common.aws import create_client
 from common.dataclasses import load_environment
@@ -61,7 +59,13 @@ def handler(
 
 @logging_function(logger)
 def create_body(*, items: list[ModelItemThread]) -> bytes:
-    text = json.dumps({"count": len(items), "threads": [x.to_dict() for x in items]})
+    def custom_default(obj):
+        if is_dataclass(obj):
+            return asdict(obj)
+        if isinstance(obj, Decimal):
+            return num if (num := int(obj)) == obj else float(str(obj))
+
+    text = json.dumps({"count": len(items), "threads": items}, default=custom_default)
     binary = text.encode()
     return compress(binary, 16)
 
