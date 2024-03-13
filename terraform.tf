@@ -58,3 +58,7 @@ output "s3_bucket_webapp" {
 output "cloudfront_url" {
   value = module.common.cloudfront_url
 }
+
+output "cloudfront_distribution_id" {
+  value = module.common.cloudfront_distribution_id
+}
