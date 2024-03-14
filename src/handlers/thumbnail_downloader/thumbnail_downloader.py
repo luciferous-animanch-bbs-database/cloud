@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from hashlib import sha224
+from hashlib import sha256
 from io import BytesIO
 from urllib.error import HTTPError
 
@@ -74,7 +74,7 @@ def get_key(*, event: SQSEvent) -> KeysThread:
 
 @logging_function(logger)
 def create_s3_key(*, s3_prefix: str, url: str) -> str:
-    digest = sha224(url.encode()).hexdigest()
+    digest = sha256(url.encode()).hexdigest()
     return f"{s3_prefix}/{digest}.avif"
 
 
