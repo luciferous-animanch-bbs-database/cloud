@@ -3,6 +3,7 @@ locals {
     prefix = {
       thumbnails = "thumbnails"
       data       = "data"
+      sqs_dlq    = "data/sqs_dlq"
     }
     key = {
       data = {
@@ -44,3 +45,21 @@ module "bucket_cloudfront_data" {
   bucket_prefix               = "cloudfront-data-"
   cloudfront_distribution_arn = aws_cloudfront_distribution.cdn.arn
 }
+
+resource "aws_s3_bucket_lifecycle_configuration" "cloudfront_data" {
+  bucket = module.bucket_cloudfront_data.bucket_id
+
+  rule {
+    id     = "sqs_dlq"
+    status = "Enabled"
+
+    filter {
+      prefix = "${local.s3.prefix.sqs_dlq}/"
+    }
+
+    expiration {
+      days = 120
+    }
+  }
+}
+

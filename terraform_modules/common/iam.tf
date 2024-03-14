@@ -223,3 +223,22 @@ resource "aws_iam_role_policy_attachment" "lambda_threads_dumper" {
   policy_arn = each.value
   role       = aws_iam_role.lambda_threads_dumper.name
 }
+
+# ================================================================
+# Role Lambda Process SQS DLQ
+# ================================================================
+
+resource "aws_iam_role" "lambda_process_sqs_dlq" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
+  name_prefix        = "process_sqs_dlq_"
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_process_sqs_dlq" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+    b = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    c = aws_iam_policy.event_bridge_put_events.arn
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.lambda_process_sqs_dlq.name
+}

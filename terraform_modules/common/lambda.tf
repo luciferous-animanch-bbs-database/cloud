@@ -199,3 +199,34 @@ resource "aws_lambda_permission" "lambda_threads_dumper" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.lambda_threads_dumper.arn
 }
+
+# ================================================================
+# Lambda Process SQS DLQ
+# ================================================================
+
+module "lambda_process_sqs_dlq" {
+  source = "../lambda_function"
+
+  handler_dir_name = "process_sqs_dlq"
+  handler          = "process_sqs_dlq.handler"
+  memory_size      = 128
+  timeout          = local.sqs.visibility_timeout.dead_letter_queue
+  role_arn         = aws_iam_role.lambda_process_sqs_dlq.arn
+
+  environment_variables = {
+    S3_BUCKET         = module.bucket_cloudfront_data.bucket_name
+    S3_PREFIX         = local.s3.prefix.sqs_dlq
+    CLOUDFRONT_DOMAIN = aws_cloudfront_distribution.cdn.domain_name
+    SYSTEM_NAME       = var.system_name
+    EVENT_BUS_NAME    = aws_cloudwatch_event_bus.error_notificator.name
+  }
+
+  layers = [
+    data.aws_ssm_parameter.base_layer_arn.value,
+    aws_lambda_layer_version.common.arn,
+  ]
+
+  system_name                         = var.system_name
+  region                              = var.region
+  subscription_destination_lambda_arn = module.error_notificator.function_arn
+}
