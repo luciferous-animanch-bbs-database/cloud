@@ -230,3 +230,16 @@ module "lambda_process_sqs_dlq" {
   region                              = var.region
   subscription_destination_lambda_arn = module.error_notificator.function_arn
 }
+
+resource "aws_lambda_event_source_mapping" "lambda_process_sqs_dlq" {
+  event_source_arn = aws_sqs_queue.dlq_insert_thread.arn
+  function_name    = module.lambda_process_sqs_dlq.function_alias_arn
+  batch_size       = 1
+  enabled          = true
+
+  maximum_batching_window_in_seconds = aws_sqs_queue.dlq_insert_thread.visibility_timeout_seconds
+
+  scaling_config {
+    maximum_concurrency = 5
+  }
+}
