@@ -83,7 +83,11 @@ def put_object(
     *, record: RecordInfo, bucket: str, prefix: str, client: S3Client
 ) -> str:
     extname = ".json" if record.is_json else ".txt"
-    content_type = "Application/json" if record.is_json else "text/plain"
+    content_type = (
+        "Application/json; charset=UTF-8"
+        if record.is_json
+        else "text/plain; charset=UTF-8"
+    )
     key = f"{prefix}/{record.message_id}{extname}"
     client.put_object(
         Bucket=bucket, Key=key, Body=record.body.encode(), ContentType=content_type
