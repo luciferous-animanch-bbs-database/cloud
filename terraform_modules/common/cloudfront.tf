@@ -154,7 +154,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     target_origin_id           = local.cloudfront.origin.data
     compress                   = true
     viewer_protocol_policy     = "https-only"
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.data.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.webapp.id
     cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
     origin_request_policy_id   = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf"
   }
