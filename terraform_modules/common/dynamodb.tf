@@ -22,8 +22,19 @@ resource "aws_dynamodb_table" "threads" {
     type = "S"
   }
 
+  attribute {
+    name = "url"
+    type = "S"
+  }
+
   hash_key  = "category"
   range_key = "sort_key"
+
+  global_secondary_index {
+    hash_key        = "url"
+    name            = "index-url"
+    projection_type = "KEYS_ONLY"
+  }
 
   name             = "threads"
   billing_mode     = "PAY_PER_REQUEST"
