@@ -24,9 +24,10 @@ class ModelItemThread:
     saved_thumbnail_file: str = field(default=None)
 
     def __post_init__(self):
-        self.saved_thumbnail_file = (
-            f"{sha256(self.thumbnail.encode()).hexdigest()}.avif"
-        )
+        if self.saved_thumbnail_file is None:
+            self.saved_thumbnail_file = (
+                f"{sha256(self.thumbnail.encode()).hexdigest()}.avif"
+            )
 
     def to_dict(self) -> dict:
         return {

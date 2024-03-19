@@ -6,5 +6,5 @@
     <option name="pathToExecutable" value="$USER_HOME$/.pyenv/shims/black" />
     <option name="sdkName" value="pyenv global" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (cloud) (7)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (cloud) (8)" project-jdk-type="Python SDK" />
 </project>
