@@ -22,6 +22,7 @@ class ModelItemThread:
     datetime: str
     updated_at: Optional[str] = field(default=None)
     saved_thumbnail_file: str = field(default=None)
+    is_archived: bool = field(default=False)
 
     def __post_init__(self):
         if self.saved_thumbnail_file is None:
