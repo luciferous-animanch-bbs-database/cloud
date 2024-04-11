@@ -5,11 +5,14 @@ from logging import DEBUG
 from typing import Type
 
 from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.data_classes.common import DictWrapper
 from boto3.dynamodb.conditions import AttributeBase, ConditionBase
 from zstd import compress
 
 
 def custom_default(obj):
+    if isinstance(obj, DictWrapper):
+        return {"type": str(type(obj)), "value": obj.raw_event}
     if isinstance(obj, Decimal):
         return num if (num := int(obj)) == obj else float(str(obj))
     if is_dataclass(obj):
