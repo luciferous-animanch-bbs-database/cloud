@@ -55,7 +55,7 @@ resource "aws_cloudwatch_event_target" "error_notificator" {
 
 resource "aws_cloudwatch_event_rule" "lambda_entry_archiver" {
   name_prefix         = "lambda_entry_archiver"
-  state               = true ? "ENABLED" : "DISABLED"
+  state               = false ? "ENABLED" : "DISABLED"
   schedule_expression = "cron(0/15 * * * ? *)"
 }
 
@@ -70,7 +70,7 @@ resource "aws_cloudwatch_event_target" "lambda_entry_archiver" {
 
 resource "aws_cloudwatch_event_rule" "lambda_threads_dumper" {
   name_prefix         = "lambda_threads_dumper_"
-  state               = true ? "ENABLED" : "DISABLED"
+  state               = false ? "ENABLED" : "DISABLED"
   schedule_expression = "cron(7/15 * * * ? *)"
 }
 
